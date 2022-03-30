@@ -40,6 +40,7 @@ import Network.HTTP.Client
   , responseHeaders, responseVersion, responseStatus )
 import Network.HTTP.Types
 import Data.Aeson (Value(..), object, (.=))
+import qualified Data.Aeson.Key as AK ( fromText )
 import qualified Data.Text as T (Text, pack)
 
 
@@ -53,7 +54,7 @@ data HttpResponse = HttpResponse
   , _responseHeaders :: ResponseHeaders
   , _responseBody :: ByteString
   , _responseCookieJar :: CookieJar
-  } deriving (Eq, Show)
+  } deriving (Show)
 
 -- | Convert an opaque `Response ByteString` into an `HttpResponse`.
 readHttpResponse :: Response ByteString -> HttpResponse
@@ -72,7 +73,7 @@ jsonResponseHeaders :: ResponseHeaders -> Value
 jsonResponseHeaders =
   Array . fromList . map (\(k,v) -> object [ (key k) .= (val v) ])
   where
-    key = T.pack . concatMap esc . show
+    key = AK.fromText . T.pack . concatMap esc . show
     val = T.pack . concatMap esc . show
 
     esc c = case c of

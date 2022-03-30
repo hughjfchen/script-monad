@@ -133,6 +133,8 @@ import Data.Aeson.Encode.Pretty
   ( encodePretty )
 import Data.Aeson.Lens
   ( _Value )
+import Data.Aeson.KeyMap
+  ( toHashMapText )
 import Data.ByteString.Lazy
   ( ByteString, fromStrict, readFile, writeFile )
 import Data.ByteString.Lazy.Char8
@@ -1153,7 +1155,7 @@ lookupKeyJson
   -> Value -- ^ JSON object
   -> HttpTT e r w s p t eff Value
 lookupKeyJson key v = case v of
-  Object obj -> case lookup key obj of
+  Object obj -> case lookup key (toHashMapText obj) of
     Nothing -> throwJsonError $ JsonKeyDoesNotExist key (Object obj)
     Just value -> return value
   _ -> throwJsonError $ JsonKeyLookupOffObject key v
